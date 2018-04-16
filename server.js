@@ -1,28 +1,23 @@
 const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
-const knex = require('knex')
+const db = require('./db')
 const session = require('express-session')
-
-const db = knex({
-    client: 'mysql',
-    connection: {
-        host: '127.0.0.1',
-        user: 'root',
-        database: 'test',
-        port: '3307'
-    }
-})
+const passport = require('passport')
+require('./passport')
 
 express()
+    .set("views", path.join(__dirname, 'views'))
+    .set('view engine', 'hbs')
+    .use(bodyParser.json())
+    .use(bodyParser.urlencoded({ extended: false }))
     .use(session({
         secret: 'knex demo',
         resave: false,
         saveUninitialized: false
     }))
-    .use(bodyParser.json())
-    .set("views", path.join(__dirname, 'views'))
-    .set('view engine', 'hbs')
+    .use(passport.initialize())
+    .use(passport.session())
 
     .get('/set/:username', (req, res) => {
         const { username } = req.params
@@ -35,11 +30,23 @@ express()
         res.send(401)
     })
 
+    .get('/login', (req, res, next) => {
+        res.render('login')
+    })
+
+    .post('/login', passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/login'
+    }))
+
     .get('/', (req, res, next) => {
         res.render('home', {
-            username: req.session.username
+            session: JSON.stringify(req.session),
+            user: JSON.stringify(req.user),
+            authenticated: req.isAuthenticated(),
         })
     })
+
     .get('/tweets', (req, res, next) => {
         db('tweets').then(tweets => {
             res.send(tweets)
