@@ -23,20 +23,28 @@ express()
     .use(bodyParser.json())
     .set("views", path.join(__dirname, 'views'))
     .set('view engine', 'hbs')
-    .get('/', (req, res, next) => {
-        res.render('home', {
-            session: JSON.stringify(req.session)
-        })
+
+    .get('/set/:username', (req, res) => {
+        const { username } = req.params
+        req.session.username = username
+        if(username) {
+            return res.render('session', {
+                session: JSON.stringify(req.session)
+            })
+        }
+        res.send(401)
     })
 
-
+    .get('/', (req, res, next) => {
+        res.render('home', {
+            username: req.session.username
+        })
+    })
     .get('/tweets', (req, res, next) => {
         db('tweets').then(tweets => {
             res.send(tweets)
         }, next)
     })
-
-
     .get('/users', (req, res, next) => {
         db('users').then(users => {
             res.render('users', { users })
