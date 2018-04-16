@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt-nodejs')
 const passport = require('passport')
 const LocalStrategy =  require('passport-local').Strategy
 const db = require('./db')
@@ -9,7 +10,7 @@ function authenticate(email, password, done) {
         .where('email', email)
         .first()
         .then(user => {
-            if(!user || user.password !== password) {
+            if(!user || !bcrypt.compareSync(password, user.password)) {
                 return done(null, false, {
                     message: 'invalid user and password combination'
                 })
