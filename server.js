@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const knex = require('knex')
+const session = require('express-session')
 
 const db = knex({
     client: 'mysql',
@@ -14,11 +15,18 @@ const db = knex({
 })
 
 express()
+    .use(session({
+        secret: 'knex demo',
+        resave: false,
+        saveUninitialized: false
+    }))
     .use(bodyParser.json())
     .set("views", path.join(__dirname, 'views'))
     .set('view engine', 'hbs')
     .get('/', (req, res, next) => {
-        res.render('home')
+        res.render('home', {
+            session: JSON.stringify(req.session)
+        })
     })
 
 
