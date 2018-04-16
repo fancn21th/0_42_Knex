@@ -39,6 +39,12 @@ express()
         failureRedirect: '/login'
     }))
 
+    .get('/logout', (req, res) => {
+        req.session.destroy( err => {
+            res.redirect('/login')
+        })
+    })
+
     .get('/', (req, res, next) => {
         res.render('home', {
             session: JSON.stringify(req.session),
