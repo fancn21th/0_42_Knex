@@ -1,10 +1,38 @@
 const bcrypt = require('bcrypt-nodejs')
 const passport = require('passport')
 const LocalStrategy =  require('passport-local').Strategy
+const GitHubStrategy = require('passport-github').Strategy
 const db = require('./db')
 
 passport.use(new LocalStrategy(authenticate))
 passport.use('local-register', new LocalStrategy({ passReqToCallback: true }, register))
+passport.use(new GitHubStrategy({
+    clientID: '6d22c9fb47c525bc66c5',
+    clientSecret: '4fe9f20ae2ce47a8114e601e4e8d936b24d0de0e',
+    callbackURL: 'http://localhost:3000/auth/github/callback'
+  },
+  function(accessToken, refreshToken, profile, done) {
+    db('users')
+      .where('oauth_provider', 'github')
+      .where('oauth_id', profile.username)
+      .first()
+      .then(user => {
+        if(user) {
+          return done(null, user)
+        }
+        const newUser = {
+          oauth_provider: 'github',
+          oauth_id: profile.username,
+        }
+        return db('users')
+          .insert(newUser)
+          .then(userIds => {
+            newUser.id = userIds[0]
+            done(null, newUser)
+          })
+      }, done)
+  }
+))
 
 function authenticate(email, password, done) {
     db('users')
