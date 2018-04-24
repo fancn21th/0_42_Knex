@@ -1,6 +1,6 @@
 const router = require('express').Router()
 
-router.
+router
   .get('/tweets', (req, res, next) => {
       db('tweets')
         .where('user_id', req.user.id)
