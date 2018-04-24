@@ -49,3 +49,5 @@ router
               res.send(200)
           }, next)
   })
+
+module.exports = router

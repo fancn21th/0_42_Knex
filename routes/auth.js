@@ -21,3 +21,5 @@ router.
       successRedirect: '/',
       failureRedirect: '/signup'
   }))
+
+  module.exports = router

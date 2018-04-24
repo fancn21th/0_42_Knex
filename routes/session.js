@@ -11,3 +11,5 @@ router
       }
       res.send(401)
   })
+
+  module.exports = router

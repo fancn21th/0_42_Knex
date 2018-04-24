@@ -3,6 +3,7 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const db = require('./db')
 const session = require('express-session')
+const passport = require('passport')
 require('./passport')
 
 express()
@@ -17,9 +18,9 @@ express()
     }))
     .use(passport.initialize())
     .use(passport.session())
-    .use(require('./routers/auth'))
-    .use(require('./routers/tweets'))
-    .use(require('./routers/users'))
+    .use(require('./routes/auth'))
+    .use(require('./routes/tweets'))
+    .use(require('./routes/users'))
     .get('/', (req, res, next) => {
         res.render('home', {
             session: JSON.stringify(req.session),
