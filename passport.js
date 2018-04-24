@@ -3,12 +3,13 @@ const passport = require('passport')
 const LocalStrategy =  require('passport-local').Strategy
 const GitHubStrategy = require('passport-github').Strategy
 const db = require('./db')
+const password = require('./config/password')
 
 passport.use(new LocalStrategy(authenticate))
 passport.use('local-register', new LocalStrategy({ passReqToCallback: true }, register))
 passport.use(new GitHubStrategy({
-    clientID: '6d22c9fb47c525bc66c5',
-    clientSecret: '4fe9f20ae2ce47a8114e601e4e8d936b24d0de0e',
+    clientID: password.clientID,
+    clientSecret: password.clientSecret,
     callbackURL: 'http://localhost:3000/auth/github/callback'
   },
   function(accessToken, refreshToken, profile, done) {

@@ -6,3 +6,4 @@ coverage
 /yarn.lock
 dist/
 /package-lock.json
+/config/password.js
